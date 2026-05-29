@@ -5,10 +5,19 @@ on:
     - cron: '0 0 */3 * *'   # 3일마다 자정(UTC) 실행 (= KST 오전 9시)
   workflow_dispatch:        # GitHub UI에서 수동 실행도 가능
 
+# 타임스탬프 파일을 커밋해서 60일 무활동 자동 비활성화를 방지하기 위함
+permissions:
+  contents: write
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ping이 실패하면(키/URL 만료, 플랜 변경 등) 여기서 워크플로우가 실패로 끝나
+      # GitHub가 자동으로 "워크플로우 실패" 이메일을 보냄. 아래 커밋 단계는 실행되지 않음.
       - name: Ping Supabase REST API
         run: |
           curl -sS --fail \
@@ -17,3 +26,24 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
           echo ""
           echo "✅ Supabase ping success at $(date -u)"
+
+      # 마지막 커밋이 50일 이상 전일 때만 타임스탬프를 커밋 → 60일 자동 비활성화 방지.
+      # 평소 개발 푸시가 있으면 봇 커밋은 생기지 않고, 오래 방치될 때만 한 번 끼어들어 타이머를 리셋함.
+      - name: Reset 60-day timer if repo is idle
+        run: |
+          LAST=$(git log -1 --format=%ct)
+          NOW=$(date -u +%s)
+          DAYS=$(( (NOW - LAST) / 86400 ))
+          echo "Days since last commit: $DAYS"
+          if [ "$DAYS" -lt 50 ]; then
+            echo "최근 활동 있음 ($DAYS일) — 커밋 생략"
+            exit 0
+          fi
+          echo "50일 이상 방치됨 — 타임스탬프 커밋으로 타이머 리셋"
+          mkdir -p .github
+          echo "Last keep-alive timer reset: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" > .github/keep-alive-last-run.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/keep-alive-last-run.txt
+          git commit -m "chore: keep-alive timer reset $(date -u +'%Y-%m-%d') [skip ci]"
+          git push
