@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 2026-05-30 — 반응형 개선 + PC 모바일 프레임 + 파비콘 교체
+
+### 변경 내용
+- **메인·행사 배너 반응형**: 캐릭터/일러스트/폰트/간격을 화면 폭 비례(`clamp(min, vw, max)`)로 변경. 작은 폰(375px 이하)에서 배너 글자가 캐릭터·일러스트에 가려지던 문제 해결. 320~430px 모든 해상도에서 동일 비율로 표시.
+- **PC 모바일 프레임**: 사용자 화면을 최대 폭 480px로 가운데 정렬하는 `AppFrame` 도입. PC에서도 폰 화면처럼 단정하게 표시. 관리자(`/admin`)는 와이드 레이아웃이 필요하므로 프레임 제외.
+- **행사 일러스트 PC 잘림 수정**: 가로 위치에 `clamp` 상한을 걸어 프레임 밖으로 잘리던 문제 해결.
+- **파비콘 교체**: Vercel 기본 → 부평상권 르네상스센터 BP 로고 심볼.
+
+### 영향받는 파일
+- 수정: [components/main/Character.tsx](components/main/Character.tsx), [components/main/Banner.tsx](components/main/Banner.tsx) — 캐릭터/폰트 vw 비례
+- 수정: [app/events/page.tsx](app/events/page.tsx) — 일러스트/타이틀 vw 비례 + PC 잘림 수정
+- 수정: [app/layout.tsx](app/layout.tsx) — AppFrame 적용 + PC 배경색
+- 신규: [components/AppFrame.tsx](components/AppFrame.tsx) — 모바일 폭 프레임(admin 제외)
+- 신규: `app/icon.png` / 삭제: `app/favicon.ico` — 파비콘 교체
+
+### 주의사항
+- `vw` 단위는 viewport(화면) 기준이라, 모바일 프레임(max-w 480px) 안에서도 PC에서는 화면 폭 기준으로 계산됨. **절대 위치(`absolute`) 요소를 새로 추가할 때는 위치값(`top`/`right` 등)에 반드시 `clamp` 상한을 걸 것** — 안 그러면 PC에서 프레임 밖으로 잘림(행사 일러스트가 이 문제로 한 번 잘렸음).
+- 원본 로고(`public/images/logo.png`)가 108×186px로 작아, 파비콘엔 충분하나 향후 PWA 홈화면 큰 아이콘(512px)엔 화질 한계 있음.
+
+---
+
 ## 2026-05-07 — 변경 이력 조회 화면 추가
 
 ### 변경 내용

@@ -6,8 +6,8 @@ interface CharacterProps {
 export default function Character({ imageSrc, isLoaded }: CharacterProps) {
   return (
     <>
-      <div 
-        className={`absolute right-[20px] top-[120px] w-[200px] h-[300px] z-30 transition-all duration-1000 delay-600 ${
+      <div
+        className={`absolute right-[clamp(15px,4.9vw,20px)] top-[clamp(94px,29.3vw,120px)] w-[clamp(156px,48.8vw,200px)] h-[clamp(234px,73.2vw,300px)] z-30 transition-all duration-1000 delay-600 ${
           isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`}
       >

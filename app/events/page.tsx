@@ -50,9 +50,9 @@ export default function EventsPage() {
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
-      {/* Background decoration - positioned on the right side */}
-      <div 
-        className={`absolute right-[-20px] top-[140px] w-[280px] h-[200px] transition-all duration-1000 ${
+      {/* Background decoration - positioned on the right side (vw 비례로 모든 해상도 동일 비율) */}
+      <div
+        className={`absolute right-[clamp(-20px,-4.9vw,-15px)] top-[clamp(110px,34.1vw,140px)] w-[clamp(220px,68.3vw,280px)] h-[clamp(157px,48.8vw,200px)] transition-all duration-1000 ${
           isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
         }`}
       >
@@ -64,9 +64,13 @@ export default function EventsPage() {
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             maskImage: `url('/images/events_mask.svg')`,
-            maskSize: '180px 200px',
+            maskSize: 'contain',
             maskPosition: 'center',
-            maskRepeat: 'no-repeat'
+            maskRepeat: 'no-repeat',
+            WebkitMaskImage: `url('/images/events_mask.svg')`,
+            WebkitMaskSize: 'contain',
+            WebkitMaskPosition: 'center',
+            WebkitMaskRepeat: 'no-repeat',
           }}
         />
       </div>
@@ -82,7 +86,7 @@ export default function EventsPage() {
         <div className={`mt-10 mb-8 transition-all duration-700 delay-200 ${
           isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`}>
-          <h2 className="text-[36px] leading-[50px]">
+          <h2 className="text-[clamp(28px,8.78vw,36px)] leading-[clamp(39px,12.2vw,50px)]">
             <span className="font-bold text-black">행사</span>
             <span className="font-extralight text-black">와</span>
             <br />
